@@ -1,20 +1,20 @@
-import path from "path";
-import Express from "express";
-import React from "react";
-import { createStore } from "redux";
-import { Provider } from "react-redux";
-import counterApp from "../src/reducers";
-import App from "../src/App";
-import { renderToString } from "react-dom/server";
-import qs from "qs";
+import path from 'path';
+import Express from 'express';
+import React from 'react';
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
+import counterApp from '../src/reducers';
+import App from '../src/App';
+import { renderToString } from 'react-dom/server';
+import qs from 'qs';
 
 const app = Express();
 const port = 3000;
 
-//Serve static files
-app.use("/static", Express.static("static"));
+app.use('/static', Express.static('static'));
 
-// This is fired every time the server side receives a request
+app.listen(port, () => console.log(`ssr started at http://localhost:${port}`));
+
 app.use(handleRender);
 
 function handleRender(req, res) {
@@ -38,7 +38,6 @@ function handleRender(req, res) {
   // Grab the initial state from our Redux store
   const finalState = store.getState();
 
-  // Send the rendered page back to the client
   res.send(renderFullPage(html, finalState));
 }
 
@@ -56,7 +55,7 @@ function renderFullPage(html, preloadedState) {
           // https://redux.js.org/recipes/server-rendering/#security-considerations
           window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(
             /</g,
-            "\\u003c"
+            '\\u003c'
           )}
         </script>
         <script src="/static/bundle.js"></script>
@@ -64,7 +63,3 @@ function renderFullPage(html, preloadedState) {
     </html>
     `;
 }
-
-app.listen(port, () => {
-  "ssr started on port 3000";
-});
